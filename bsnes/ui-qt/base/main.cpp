@@ -5,6 +5,8 @@ void MainWindow::updateRecentFiles()
   // there's 2 possibilities
   // 1. loaded file already in recent list
   // 2. not so
+  if (!strcmp(cartridge.fileName(),""))
+    return;
 
   int x;
   Configuration &c = config();
@@ -99,7 +101,6 @@ MainWindow::MainWindow() {
   system = menuBar->addMenu("&System");
 
   system_load = system->addAction("Load &Cartridge ...");
-  system_load->setShortcut(QKeySequence("Ctrl+C"));
 
   recentFiles.active_slots = 0;
   system_load_recent = system->addMenu("Load Recent Cartridge ...");
@@ -129,7 +130,6 @@ MainWindow::MainWindow() {
   system->addAction(system_power = new CheckAction("&Power", 0));
 
   system_reset = system->addAction("&Reset");
-  system_reset->setShortcut(QKeySequence("Ctrl+R"));
 
   system->addSeparator();
 
@@ -274,14 +274,12 @@ MainWindow::MainWindow() {
   tools_cheatFinder = tools->addAction("Cheat &Finder ...");
 
   tools_stateManager = tools->addAction("&State Manager ...");
-  tools_stateManager->setShortcut(QKeySequence("Ctrl+M"));
 
   tools_effectToggle = tools->addAction("Effect &Toggle ...");
   if(!SNES::PPU::SupportsLayerEnable && !SNES::DSP::SupportsChannelEnable)
     tools_effectToggle->setVisible(false);
 
   tools_debugger = tools->addAction("&Debugger ...");
-  tools_debugger->setShortcut(QKeySequence("Ctrl+D"));
   #if !defined(DEBUGGER)
   tools_debugger->setVisible(false);
   #endif
@@ -475,10 +473,6 @@ void MainWindow::syncUi() {
     tools_movies_recordFromPowerOn->setEnabled(movie.state == Movie::Inactive);
     tools_movies_recordFromHere->setEnabled(movie.state == Movie::Inactive);
   }
-}
-
-bool MainWindow::isActive() {
-  return isActiveWindow() && !isMinimized();
 }
 
 void MainWindow::loadCartridge() {

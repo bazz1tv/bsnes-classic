@@ -114,7 +114,6 @@ public:
   QLabel *systemState;
 
   void syncUi();
-  bool isActive();
   void resizeEvent(QResizeEvent*);
   void closeEvent(QCloseEvent*);
   MainWindow();

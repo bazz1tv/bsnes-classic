@@ -6,6 +6,8 @@
 #include "userinterface-emulationspeed.cpp"
 #include "userinterface-states.cpp"
 #include "userinterface-videosettings.cpp"
+#include "userinterface-tools.cpp"
+#include "userinterface-debugger.cpp"
 
 void MappedInput::bind() {
   lstring part;
@@ -114,12 +116,20 @@ AnalogInput::AnalogInput(const char *label, const char *configName) : MappedInpu
 
 void HotkeyInput::poll() {
   DigitalInput::poll();
-  if(mainWindow->isActive() && state != previousState) {
+  Window *aWindow = NULL;
+  if (assocWindow == AssocWindow::Main)
+    aWindow = mainWindow;
+  else if (assocWindow == AssocWindow::Debugger)
+    aWindow = debugger;
+
+  if(aWindow && aWindow->isActive() && state != previousState) {
     state ? pressed() : released();
   }
 }
 
-HotkeyInput::HotkeyInput(const char *label, const char *configName) : DigitalInput(label, configName) {
+HotkeyInput::HotkeyInput(const char *label, const char *configName, AssocWindow assocWindow/*=mainWindow*/) :
+DigitalInput(label, configName),
+assocWindow(assocWindow) {
 }
 
 //

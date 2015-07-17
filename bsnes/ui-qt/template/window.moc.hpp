@@ -15,6 +15,7 @@ public:
   void show();
   void hide();
   void shrink();
+  bool isActive();
 
   Window();
 
@@ -77,6 +78,10 @@ inline void Window::shrink() {
     usleep(2000);
     QApplication::processEvents();
   }
+}
+
+inline bool Window::isActive() {
+  return isActiveWindow() && !isMinimized();
 }
 
 inline void Window::keyReleaseEvent(QKeyEvent *event) {

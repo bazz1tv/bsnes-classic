@@ -42,7 +42,11 @@ struct HotkeyInput : DigitalInput {
   virtual void pressed() {}
   virtual void released() {}
 
-  HotkeyInput(const char*, const char*);
+  enum AssocWindow { Main, Debugger } assocWindow;
+  
+  HotkeyInput(const char*, const char*, AssocWindow assocWindow=AssocWindow::Main);
+
+  
 };
 
 struct InputGroup : public array<MappedInput*> {

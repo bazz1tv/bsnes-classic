@@ -3,3 +3,5 @@ extern InputGroup userInterfaceSystem;
 extern InputGroup userInterfaceEmulationSpeed;
 extern InputGroup userInterfaceStates;
 extern InputGroup userInterfaceVideoSettings;
+extern InputGroup userInterfaceTools;
+extern InputGroup userInterfaceDebugger;
