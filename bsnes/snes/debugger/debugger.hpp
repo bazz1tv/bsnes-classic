@@ -7,6 +7,8 @@ public:
     SMPStep,
   } break_event;
 
+  int autobreak;
+
   enum { Breakpoints = 8 };
   struct Breakpoint {
     bool enabled;

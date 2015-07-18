@@ -88,6 +88,9 @@ Debugger::Debugger() {
   traceMask = new QCheckBox("Enable trace mask");
   controlLayout->addWidget(traceMask);
 
+  autobreak = new QCheckBox("Autobreak");
+  controlLayout->addWidget(autobreak);
+
   spacer = new QWidget;
   spacer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
   controlLayout->addWidget(spacer);
@@ -121,10 +124,16 @@ Debugger::Debugger() {
   connect(traceCPU, SIGNAL(stateChanged(int)), tracer, SLOT(setCpuTraceState(int)));
   connect(traceSMP, SIGNAL(stateChanged(int)), tracer, SLOT(setSmpTraceState(int)));
   connect(traceMask, SIGNAL(stateChanged(int)), tracer, SLOT(setTraceMaskState(int)));
+  connect(autobreak, SIGNAL(stateChanged(int)), this, SLOT(setAutoBreak(int)));
 
   frameCounter = 0;
   synchronize();
   resize(855, 425);
+}
+
+void Debugger::setAutoBreak(int i)
+{
+  SNES::debugger.autobreak = i;
 }
 
 void Debugger::modifySystemState(unsigned state) {

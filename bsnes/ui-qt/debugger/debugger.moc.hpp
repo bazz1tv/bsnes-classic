@@ -27,6 +27,7 @@ public:
   QCheckBox *traceCPU;
   QCheckBox *traceSMP;
   QCheckBox *traceMask;
+  QCheckBox *autobreak;
   QWidget *spacer;
 
   void modifySystemState(unsigned);
@@ -37,6 +38,7 @@ public:
   Debugger();
 
 public slots:
+  void setAutoBreak(int i);
   void clear();
   void synchronize();
 
