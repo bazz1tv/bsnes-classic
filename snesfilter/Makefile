@@ -2,9 +2,9 @@ include nall/Makefile
 
 # Custom QT Path
 ifeq ($(QT_PATH),)
-	QT_PATH := /usr/local/Cellar/qt/4.8.7
+	QT_PATH := /usr/local/Cellar/qt5/5.4.2
 endif
-qtlibs := QtCore QtGui
+qtlibs := QtCore QtGui QtWidgets
 include nall/qt/Makefile
 
 c     := $(compiler) -x c -std=gnu99

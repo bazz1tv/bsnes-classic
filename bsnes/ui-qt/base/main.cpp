@@ -310,7 +310,7 @@ MainWindow::MainWindow() {
       canvas = new CanvasWidget;
       canvas->setAcceptDrops(true);
       canvas->setFocusPolicy(Qt::StrongFocus);
-      canvas->setAttribute(Qt::WA_PaintOnScreen, true);  //disable Qt painting on focus / resize
+      //canvas->setAttribute(Qt::WA_PaintOnScreen, true);  //disable Qt painting on focus / resize
 
       QPalette palette;
       palette.setColor(QPalette::Window, QColor(0, 0, 0));
@@ -743,6 +743,7 @@ void CanvasObject::dropEvent(QDropEvent *event) {
   if(event->mimeData()->hasUrls()) {
     QList<QUrl> list = event->mimeData()->urls();
     if(list.count() == 1) cartridge.loadNormal(list.at(0).toLocalFile().toUtf8().constData());
+    mainWindow->updateRecentFiles();
   }
 }
 

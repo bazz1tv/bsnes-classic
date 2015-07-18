@@ -9,7 +9,7 @@ endif
 
 # Custom QT Path
 ifeq ($(QT_PATH),)
-	QT_PATH := /usr/local/Cellar/qt/4.8.7
+	QT_PATH := /usr/local/Cellar/qt5/5.4.2
 endif
 
 # compiler
