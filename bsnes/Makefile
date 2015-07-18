@@ -8,7 +8,9 @@ ifeq ($(ui),)
 endif
 
 # Custom QT Path
-#QT_PATH := /usr/local/Cellar/qt/4.8.7
+ifeq ($(QT_PATH),)
+	QT_PATH := /usr/local/Cellar/qt/4.8.7
+endif
 
 # compiler
 c       := $(compiler) -x c -std=gnu99

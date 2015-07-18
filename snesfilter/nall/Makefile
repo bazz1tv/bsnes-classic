@@ -33,7 +33,7 @@ endif
 
 ifeq ($(compiler),)
   ifeq ($(platform),osx)
-    compiler := clang++
+    compiler := g++-4.9
   else
     compiler := g++
   endif

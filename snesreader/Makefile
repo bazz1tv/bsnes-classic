@@ -1,5 +1,8 @@
 include nall/Makefile
-
+# Custom QT Path
+ifeq ($(QT_PATH),)
+	QT_PATH := /usr/local/Cellar/qt/4.8.7
+endif
 qtlibs := QtCore QtGui
 include nall/qt/Makefile
 
