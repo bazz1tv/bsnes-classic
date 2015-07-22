@@ -76,7 +76,6 @@ void RecentFileAction::load()
   string s = qs.toUtf8().data();
   fileBrowser->cartridgeMode = FileBrowser::CartridgeMode::LoadDirect;
   fileBrowser->onAcceptCartridge(s);
-  mainWindow->updateRecentFiles();
 }
 
 
@@ -484,7 +483,6 @@ bool MainWindow::isActive() {
 void MainWindow::loadCartridge() {
   fileBrowser->setWindowTitle("Load Cartridge");
   fileBrowser->loadCartridge(FileBrowser::LoadDirect);
-  updateRecentFiles();
 }
 
 void MainWindow::loadBsxSlottedCartridge() {
@@ -749,7 +747,6 @@ void CanvasObject::dropEvent(QDropEvent *event) {
   if(event->mimeData()->hasUrls()) {
     QList<QUrl> list = event->mimeData()->urls();
     if(list.count() == 1) cartridge.loadNormal(list.at(0).toLocalFile().toUtf8().constData());
-    mainWindow->updateRecentFiles();
   }
 }
 
