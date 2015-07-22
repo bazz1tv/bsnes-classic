@@ -9,7 +9,9 @@ void PPU::update_sprite_list(unsigned addr, uint8 data) {
     case 2: sprite_list[i].character = data; break;
     case 3: sprite_list[i].vflip = data & 0x80;
             sprite_list[i].hflip = data & 0x40;
-            sprite_list[i].priority = (data >> 4) & 3;
+            if (i >= 8 && i <= 10)
+              sprite_list[i].priority = 0;
+            else sprite_list[i].priority = (data >> 4) & 3;
             sprite_list[i].palette = (data >> 1) & 7;
             sprite_list[i].use_nameselect = data & 0x01;
     }
