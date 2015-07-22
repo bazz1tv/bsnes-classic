@@ -78,7 +78,6 @@ void RecentFileAction::load()
   string s = qs.toUtf8().data();
   fileBrowser->cartridgeMode = FileBrowser::CartridgeMode::LoadDirect;
   fileBrowser->onAcceptCartridge(s);
-  mainWindow->updateRecentFiles();
 }
 
 
@@ -478,7 +477,6 @@ void MainWindow::syncUi() {
 void MainWindow::loadCartridge() {
   fileBrowser->setWindowTitle("Load Cartridge");
   fileBrowser->loadCartridge(FileBrowser::LoadDirect);
-  updateRecentFiles();
 }
 
 void MainWindow::loadBsxSlottedCartridge() {

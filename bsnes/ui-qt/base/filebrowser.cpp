@@ -204,6 +204,7 @@ void FileBrowser::onAcceptCartridge(const string &path) {
       loaderWindow->selectSlot2Cartridge(filename);
     }
   }
+  mainWindow->updateRecentFiles();
 }
 
 void FileBrowser::acceptNormal(const string &filename) {
