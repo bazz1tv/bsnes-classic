@@ -73,11 +73,11 @@ void OamViewer::refresh() {
 
     // Use the character (Tile#) based from OBJ VRAM location
     // $2101 and PPU Appendix 1,2 are very useful to understandin OAM
-    fprintf(stderr, "cur_item = %d\n", atoi(list->currentItem()->text(0).toUtf8().data()));
-    fprintf(stderr, "OAM VRAM addr = $%X, name sel = $%X\n", SNES::ppu.regs.oam_tdaddr, SNES::ppu.regs.oam_nameselect);
+    //fprintf(stderr, "cur_item = %d\n", atoi(list->currentItem()->text(0).toUtf8().data()));
+    //fprintf(stderr, "OAM VRAM addr = $%X, name sel = $%X\n", SNES::ppu.regs.oam_tdaddr, SNES::ppu.regs.oam_nameselect);
     if (list->currentItem() == item)
     {
-      fprintf(stderr, "item %d matches!\n", v);
+      //fprintf(stderr, "item %d matches!\n", v);
       // Update the image
       unsigned tile_width = width / 8;
       unsigned tile_height = height / 8;
