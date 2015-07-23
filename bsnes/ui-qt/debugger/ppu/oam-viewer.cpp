@@ -92,7 +92,7 @@ void OamViewer::refresh() {
       source += use_name ? (SNES::ppu.regs.oam_nameselect+1) * (0x2000) : 0;
       source += character * 0x20; // 4bpp tile size
       uint32_t *dest = (uint32_t*)canvas->image->bits();
-
+      unsigned palette_index = 128 + (palette * 16);
       unsigned ppy,ppx;
       for(unsigned ty = 0; ty < tile_height; ty++) 
       {
@@ -100,21 +100,46 @@ void OamViewer::refresh() {
         {
           for(unsigned py = ppy = 0; py < 8; py++,ppy+=zoomLevel) 
           {
-            uint8_t d0 = source[ 0];
-            uint8_t d1 = source[ 1];
-            uint8_t d2 = source[16];
-            uint8_t d3 = source[17];
             for(unsigned px = ppx = 0; px < 8; px++,ppx+=zoomLevel) 
             {
               uint8_t pixel = 0;
-              pixel |= (d0 & (0x80 >> px)) ? 1 : 0;
-              pixel |= (d1 & (0x80 >> px)) ? 2 : 0;
-              pixel |= (d2 & (0x80 >> px)) ? 4 : 0;
-              pixel |= (d3 & (0x80 >> px)) ? 8 : 0;
-              pixel *= 0x11;
+              d0 = (source[ 0]>>px) & 1;
+              d1 = (source[ 1]>>px) & 1;
+              d2 = (source[16]>>px) & 1;
+              d3 = (source[17]>>px) & 1;
+
+              pixel = (d3<<3) | (d2<<2) | (d1<<1) | d0;
+
+              uint16_t color;
+              uint32_t output;
+              // This code was taken from CgramViewer::refresh() and should be refactored into a common utility function
+              if (pixel)
+              {
+                color = SNES::memory::cgram[(palette_index+pixel) * 2];
+                color |= SNES::memory::cgram[(palette_index+pixel) * 2 + 1] << 8;
+
+                uint8_t r = (color >>  0) & 31;
+                uint8_t g = (color >>  5) & 31;
+                uint8_t b = (color >> 10) & 31;
+
+                r = (r << 3) | (r >> 2);
+                g = (g << 3) | (g >> 2);
+                b = (b << 3) | (b >> 2);
+
+                output = (r << 16) | (g << 8) | (b << 0);
+              }
+              else output = 0;
+              
               for (unsigned y=0; y < zoomLevel; y++)
                 for (unsigned x=0; x < zoomLevel; x++)
-                  dest[(ty * 8 + ppy + y) * 128 + (tx * 8 + ppx + x)] = (pixel << 16) + (pixel << 8) + pixel;
+                {
+                  unsigned hf_val=0,vf_val=0;
+
+                  vf_val = vflip ? ((8*zoomLevel)-ppy) : ppy;
+                  hf_val = hflip ? ppx : ((8*zoomLevel)-ppx);
+
+                  dest[(ty * 8 + vf_val + y) * 128 + (tx * 8 + hf_val + x)] = output;
+                }
             }
             source += 2;
           }
