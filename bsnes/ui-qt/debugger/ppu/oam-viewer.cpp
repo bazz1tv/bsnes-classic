@@ -101,6 +101,7 @@ void OamViewer::refresh(QTreeWidgetItem *item)
     uint32_t *dest = (uint32_t*)canvas->image->bits();
     unsigned palette_index = 128 + (palette * 16);
     unsigned zy,zx; // direct replacement of px/py for zoom level drawing
+    // This code was borrowed modified from VRAM viewer
     for(unsigned ty = 0; ty < tile_height; ty++) 
     {
       for(unsigned tx = 0; tx < tile_width; tx++) 
