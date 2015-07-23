@@ -93,14 +93,14 @@ void OamViewer::refresh() {
       source += character * 0x20; // 4bpp tile size
       uint32_t *dest = (uint32_t*)canvas->image->bits();
       unsigned palette_index = 128 + (palette * 16);
-      unsigned ppy,ppx;
+      unsigned zy,zx; // direct replacement of px/py for zoom level drawing
       for(unsigned ty = 0; ty < tile_height; ty++) 
       {
         for(unsigned tx = 0; tx < tile_width; tx++) 
         {
-          for(unsigned py = ppy = 0; py < 8; py++,ppy+=zoomLevel) 
+          for(unsigned py = zy = 0; py < 8; py++,zy+=zoomLevel)
           {
-            for(unsigned px = ppx = 0; px < 8; px++,ppx+=zoomLevel) 
+            for(unsigned px = zx = 0; px < 8; px++,zx+=zoomLevel)
             {
               uint8_t pixel = 0;
               d0 = (source[ 0]>>px) & 1;
@@ -135,8 +135,8 @@ void OamViewer::refresh() {
                 {
                   unsigned hf_val=0,vf_val=0;
 
-                  vf_val = vflip ? ((8*zoomLevel)-ppy) : ppy;
-                  hf_val = hflip ? ppx : ((8*zoomLevel)-ppx);
+                  vf_val = vflip ? ((8*zoomLevel)-zy) : zy;
+                  hf_val = hflip ? zx : ((8*zoomLevel)-zx);
 
                   dest[(ty * 8 + vf_val + y) * 128 + (tx * 8 + hf_val + x)] = output;
                 }
