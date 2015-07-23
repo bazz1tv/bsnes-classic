@@ -5,6 +5,7 @@ public:
   QHBoxLayout *layout;
   QTreeWidget *list;
   QVBoxLayout *controlLayout;
+    QHBoxLayout *zoomLayout;
   struct Canvas : public QWidget {
     QImage *image;
     void paintEvent(QPaintEvent*);
@@ -13,12 +14,17 @@ public:
   QCheckBox *autoUpdateBox;
   QPushButton *refreshButton;
 
+  QLabel *zoomLabel;
+  QSpinBox *zoom;
+  int zoomLevel;
+
   void autoUpdate();
   OamViewer();
 
 public slots:
   void show();
   void refresh();
+  void setZoom(int zoomlevel);
 };
 
 extern OamViewer *oamViewer;

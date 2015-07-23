@@ -81,6 +81,12 @@ void OamViewer::refresh() {
       // Update the image
       unsigned tile_width = width / 8;
       unsigned tile_height = height / 8;
+
+      // zoom-level bounds check
+      while(width*zoomLevel > 128 || height*zoomLevel > 128)
+      {
+        zoom->setValue(zoomLevel-1);
+      }
       const uint8_t *source = SNES::memory::vram.data();
       source += SNES::ppu.regs.oam_tdaddr;
       source += use_name ? (SNES::ppu.regs.oam_nameselect+1) * (0x2000) : 0;
@@ -92,13 +98,13 @@ void OamViewer::refresh() {
       {
         for(unsigned tx = 0; tx < tile_width; tx++) 
         {
-          for(unsigned py = ppy = 0; py < 8; py++,ppy+=2) 
+          for(unsigned py = ppy = 0; py < 8; py++,ppy+=zoomLevel) 
           {
             uint8_t d0 = source[ 0];
             uint8_t d1 = source[ 1];
             uint8_t d2 = source[16];
             uint8_t d3 = source[17];
-            for(unsigned px = ppx = 0; px < 8; px++,ppx+=2) 
+            for(unsigned px = ppx = 0; px < 8; px++,ppx+=zoomLevel) 
             {
               uint8_t pixel = 0;
               pixel |= (d0 & (0x80 >> px)) ? 1 : 0;
@@ -106,10 +112,9 @@ void OamViewer::refresh() {
               pixel |= (d2 & (0x80 >> px)) ? 4 : 0;
               pixel |= (d3 & (0x80 >> px)) ? 8 : 0;
               pixel *= 0x11;
-              dest[(ty * 8 + ppy) * 128 + (tx * 8 + ppx)] = (pixel << 16) + (pixel << 8) + pixel;
-              dest[(ty * 8 + ppy) * 128 + (tx * 8 + ppx + 1)] = (pixel << 16) + (pixel << 8) + pixel;
-              dest[(ty * 8 + ppy + 1) * 128 + (tx * 8 + ppx)] = (pixel << 16) + (pixel << 8) + pixel;
-              dest[(ty * 8 + ppy + 1) * 128 + (tx * 8 + ppx + 1)] = (pixel << 16) + (pixel << 8) + pixel;
+              for (unsigned y=0; y < zoomLevel; y++)
+                for (unsigned x=0; x < zoomLevel; x++)
+                  dest[(ty * 8 + ppy + y) * 128 + (tx * 8 + ppx + x)] = (pixel << 16) + (pixel << 8) + pixel;
             }
             source += 2;
           }
@@ -127,7 +132,9 @@ void OamViewer::autoUpdate() {
   if(autoUpdateBox->isChecked()) refresh();
 }
 
-OamViewer::OamViewer() {
+OamViewer::OamViewer() :
+zoomLevel(2)
+{
   setObjectName("oam-viewer");
   setWindowTitle("Sprite Viewer");
   setGeometryString(&config().geometry.oamViewer);
@@ -177,7 +184,27 @@ OamViewer::OamViewer() {
   refreshButton = new QPushButton("Refresh");
   controlLayout->addWidget(refreshButton);
 
+  zoomLayout = new QHBoxLayout;
+  zoomLayout->setAlignment(Qt::AlignLeft);
+  zoomLayout->setMargin(Style::WindowMargin);
+  zoomLayout->setSpacing(Style::WidgetSpacing);
+  controlLayout->addLayout(zoomLayout);
+
+  // Zoom widgets
+  zoomLabel = new QLabel("Zoom", this);
+  zoom = new QSpinBox(this);
+  zoom->setValue(2);
+  zoomLayout->addWidget(zoomLabel);
+  zoomLayout->addWidget(zoom);
+
+  //Signals
+  connect(zoom, SIGNAL(valueChanged(int)), this, SLOT(setZoom(int)));
   connect(refreshButton, SIGNAL(released()), this, SLOT(refresh()));
+}
+
+void OamViewer::setZoom(int zoomLevel)
+{
+  this->zoomLevel = zoomLevel;
 }
 
 void OamViewer::Canvas::paintEvent(QPaintEvent*) {
