@@ -391,6 +391,9 @@ void PPU::set_frameskip(unsigned frameskip_) {
 }
 
 PPU::PPU() {
+  for (unsigned i=0; i < 128; i++)
+    sprEnabled[i] = true;
+
   surface = new uint16[512 * 512];
   output = surface + 16 * 512;
 

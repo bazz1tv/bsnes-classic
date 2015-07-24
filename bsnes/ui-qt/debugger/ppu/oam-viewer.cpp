@@ -194,6 +194,27 @@ void OamViewer::refresh(QTreeWidgetItem *item)
   }
 }
 
+void OamViewer::refresh(QTreeWidgetItem *item, int column)
+{
+  if (column == 8)
+  {
+    if (item->text(column) == "On")
+    {
+      item->setText(column, "Off");
+      SNES::ppu.sprEnabled[atoi(list->currentItem()->text(0).toUtf8().data())] = false;
+    }
+    else
+    {
+      item->setText(column, "On");
+      SNES::ppu.sprEnabled[atoi(list->currentItem()->text(0).toUtf8().data())] = true;
+    }
+  }
+  else
+  {
+    refresh(item);
+  }
+}
+
 void OamViewer::autoUpdate() {
   if(autoUpdateBox->isChecked()) refresh();
 }
@@ -213,8 +234,8 @@ zoomLevel(2)
   setLayout(layout);
 
   list = new QTreeWidget;
-  list->setColumnCount(8);
-  list->setHeaderLabels(QStringList() << "#" << "Size" << "X" << "Y" << "Char" << "Pri" << "Pal" << "Flags");
+  list->setColumnCount(9);
+  list->setHeaderLabels(QStringList() << "#" << "Size" << "X" << "Y" << "Char" << "Pri" << "Pal" << "Flags" << "Enable");
   list->setAllColumnsShowFocus(true);
   list->setAlternatingRowColors(true);
   list->setRootIsDecorated(false);
@@ -232,7 +253,9 @@ zoomLevel(2)
     item->setTextAlignment(5, Qt::AlignRight);
     item->setTextAlignment(6, Qt::AlignRight);
     item->setTextAlignment(7, Qt::AlignLeft);
+    item->setTextAlignment(8, Qt::AlignLeft);
     item->setText(0, string() << i);
+    item->setText(8, "On");
   }
 
   controlLayout = new QVBoxLayout;
@@ -268,13 +291,14 @@ zoomLevel(2)
   connect(refreshButton, SIGNAL(released()), this, SLOT(refresh()));
   // The combination of the two signals below allows updates when different sprites are selected via KB arrow keys or mouse,
   // as well as updating the sprite when the selected item is clicked on repeatedly. (OSX 10.10 tested only)
-  connect(list, SIGNAL(itemActivated(QTreeWidgetItem *,int)), this, SLOT(refresh(QTreeWidgetItem *)));
+  connect(list, SIGNAL(itemActivated(QTreeWidgetItem *,int)), this, SLOT(refresh(QTreeWidgetItem *, int)));
   connect(list, SIGNAL(currentItemChanged(QTreeWidgetItem *,QTreeWidgetItem *)), this, SLOT(refresh(QTreeWidgetItem *)));
 }
 
 void OamViewer::setZoom(int zoomLevel)
 {
   this->zoomLevel = zoomLevel;
+  refresh(list->currentItem());
 }
 
 void OamViewer::Canvas::paintEvent(QPaintEvent*) {
