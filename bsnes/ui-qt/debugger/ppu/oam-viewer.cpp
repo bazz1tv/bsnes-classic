@@ -147,7 +147,7 @@ void OamViewer::refresh(QTreeWidgetItem *item)
 
             unsigned hf_val=0,vf_val=0;
 
-            vf_val = vflip ? (zoomLevel*8)-zoomLevel-(py*zoomLevel) : (py*zoomLevel);
+            vf_val = /*vflip ? (zoomLevel*8)-zoomLevel-(py*zoomLevel) : */(py*zoomLevel);
             hf_val = /*hflip ? px*zoomLevel : */(zoomLevel*8)-zoomLevel-(px*zoomLevel);
             
             for (unsigned y=0; y < zoomLevel; y++)
