@@ -7,7 +7,7 @@ struct Disassembler : HotkeyInput {
   }
 
   Disassembler() : HotkeyInput("Disassembler", "input.userInterface.debugger.disassembler", AssocWindow::Debugger) {
-    name = "None";
+    name = "Super+KB0::D";
     userInterfaceDebugger.attach(this);
   }
 } disassembler;
