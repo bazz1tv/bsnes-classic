@@ -113,6 +113,8 @@ bool Cartridge::loadNormal(const char *base) {
   fileName = baseName;
   name = notdir(nall::basename(baseName));
 
+  mainWindow->updateRecentFiles();
+
   utility.modifySystemState(Utility::LoadCartridge);
   return true;
 }
