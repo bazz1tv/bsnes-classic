@@ -51,6 +51,7 @@ void OamViewer::refresh(QTreeWidgetItem *item)
   unsigned character = d2;
   unsigned priority = (d3 >> 4) & 3;
   unsigned palette = (d3 >> 1) & 7;
+  bool horiz_traversed = false, v_traversed = false;
   string flags;
   bool use_name=false, hflip=false, vflip=false;
   if(d3 & 0x80)
@@ -68,11 +69,12 @@ void OamViewer::refresh(QTreeWidgetItem *item)
     flags << "N";
     use_name = true;
   }
-
+  char character_str[10];
+  sprintf(character_str, "$%02X", character);
   item->setText(1, string() << width << "x" << height);
   item->setText(2, string() << xpos);
   item->setText(3, string() << ypos);
-  item->setText(4, string() << character);
+  item->setText(4, string() << character_str);
   item->setText(5, string() << priority);
   item->setText(6, string() << palette);
   item->setText(7, flags);
@@ -95,21 +97,23 @@ void OamViewer::refresh(QTreeWidgetItem *item)
       zoom->setValue(zoomLevel-1);
     }
     const uint8_t *source = SNES::memory::vram.data();
+
     source += SNES::ppu.regs.oam_tdaddr;
     source += use_name ? (SNES::ppu.regs.oam_nameselect+1) * (0x2000) : 0;
     source += character * 0x20; // 4bpp tile size
-    uint32_t *dest = (uint32_t*)canvas->image->bits();
+    const uint8_t *ysource = source, *oosource = source;
+    //uint32_t *dest = (uint32_t*)canvas->image->bits();
     unsigned palette_index = 128 + (palette * 16);
-    unsigned zy,zx; // direct replacement of px/py for zoom level drawing
     // This code was borrowed modified from VRAM viewer
     for(unsigned ty = 0; ty < tile_height; ty++) 
     {
       for(unsigned tx = 0; tx < tile_width; tx++) 
       {
-        for(unsigned py = zy = 0; py < 8; py++,zy+=zoomLevel)
+        for(unsigned py = 0; py < 8; py++)
         {
-          for(unsigned px = zx = 0; px < 8; px++,zx+=zoomLevel)
+          for(unsigned px = 0; px < 8; px++)
           {
+            //fprintf(stderr, "V: $%X\n", source-oosource);
             uint8_t pixel = 0;
             d0 = (source[ 0]>>px) & 1;
             d1 = (source[ 1]>>px) & 1;
@@ -120,15 +124,18 @@ void OamViewer::refresh(QTreeWidgetItem *item)
 
             uint16_t color;
             uint32_t output;
+            uint8_t r=0;
+            uint8_t g=0;
+            uint8_t b=0;
             // This code was taken from CgramViewer::refresh() and should be refactored into a common utility function
             if (pixel)
             {
               color = SNES::memory::cgram[(palette_index+pixel) * 2];
               color |= SNES::memory::cgram[(palette_index+pixel) * 2 + 1] << 8;
 
-              uint8_t r = (color >>  0) & 31;
-              uint8_t g = (color >>  5) & 31;
-              uint8_t b = (color >> 10) & 31;
+              r = (color >>  0) & 31;
+              g = (color >>  5) & 31;
+              b = (color >> 10) & 31;
 
               r = (r << 3) | (r >> 2);
               g = (g << 3) | (g >> 2);
@@ -137,22 +144,51 @@ void OamViewer::refresh(QTreeWidgetItem *item)
               output = (r << 16) | (g << 8) | (b << 0);
             }
             else output = 0;
+
+            unsigned hf_val=0,vf_val=0;
+
+            vf_val = vflip ? (zoomLevel*8)-zoomLevel-(py*zoomLevel) : (py*zoomLevel);
+            hf_val = /*hflip ? px*zoomLevel : */(zoomLevel*8)-zoomLevel-(px*zoomLevel);
             
             for (unsigned y=0; y < zoomLevel; y++)
+            {
               for (unsigned x=0; x < zoomLevel; x++)
               {
-                unsigned hf_val=0,vf_val=0;
-
-                vf_val = vflip ? ((8*zoomLevel)-zy) : zy;
-                hf_val = hflip ? zx : ((8*zoomLevel)-zx);
-
-                dest[(ty * 8 + vf_val + y) * 128 + (tx * 8 + hf_val + x)] = output;
+                QRgb rgb = qRgb(r,g,b);
+                //fprintf(stderr, "(%d,%d)\n", ((tx * (8*zoomLevel)) + hf_val + x), ((ty * (8*zoomLevel)) + vf_val + y));
+                canvas->image->setPixel(((tx * (8*zoomLevel)) + hf_val + x), ((ty * (8*zoomLevel)) + vf_val + y), rgb);
               }
+            }
           }
           source += 2;
         }
         source += 16;
+        // Horizontal sprite-region traversal rule
+        if ( ((character % 0x10) + tx >= 0xF) && tx != tile_width - 1 && width > 8 && !horiz_traversed)
+        {
+          source -= 32*0x10;
+          horiz_traversed = true;
+        }
       }
+      source = ysource + (32 * 16);
+      ysource = source;
+      horiz_traversed = false;
+      // Vertical sprite-region traversal rule
+      if (height > 8 && ty != tile_height-1 && (character + (0x10*(ty))) >= 0xF0 && !v_traversed) // if last row of sprite region
+      {
+        source = SNES::memory::vram.data();
+        source += SNES::ppu.regs.oam_tdaddr;
+        source += use_name ? (SNES::ppu.regs.oam_nameselect+1) * (0x2000) : 0;
+        source += (character % 0x10) * 0x20; // 4bpp tile size
+        ysource = source;
+        v_traversed = true;
+      }
+    }
+    // Super lazy!!
+    if (hflip || vflip)
+    {
+      QImage mirrored = canvas->image->mirrored(hflip,vflip);
+      *canvas->image = mirrored;
     }
     canvas->update();
   }
