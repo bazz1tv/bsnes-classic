@@ -7,7 +7,7 @@ struct Debugger : HotkeyInput {
     mainWindow->showDebugger();
   }
 
-  Debugger() : HotkeyInput("Debugger", "input.userInterface.tools.debugger") {
+  Debugger() : HotkeyInput("Debugger", "input.userInterface.tools.debugger", AssocWindow::Global) {
     name = "Super+KB0::D";
     userInterfaceTools.attach(this);
   }
