@@ -91,4 +91,15 @@ struct StepSMP : HotkeyInput {
     userInterfaceDebugger.attach(this);
   }
 } stepSMP;
+
+struct OamViewer : HotkeyInput {
+  void pressed() {
+    oamViewer->show();
+  }
+
+  OamViewer() : HotkeyInput("OAM Viewer", "input.userInterface.debugger.oamViewer", AssocWindow::Debugger) {
+    name = "Super+KB0::S";
+    userInterfaceDebugger.attach(this);
+  }
+} OamViewer;
 }

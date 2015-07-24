@@ -117,13 +117,26 @@ AnalogInput::AnalogInput(const char *label, const char *configName) : MappedInpu
 void HotkeyInput::poll() {
   DigitalInput::poll();
   Window *aWindow = NULL;
-  if (assocWindow == AssocWindow::Main)
+  if (assocWindow == AssocWindow::Global)
+    aWindow = NULL;
+  else if (assocWindow == AssocWindow::Main)
     aWindow = mainWindow;
   else if (assocWindow == AssocWindow::Debugger)
     aWindow = debugger;
 
-  if(aWindow && aWindow->isActive() && state != previousState) {
-    state ? pressed() : released();
+  if(aWindow)
+  {
+    if (aWindow->isActive() && state != previousState) 
+    {
+      state ? pressed() : released();
+    }
+  }
+  else
+  {
+    if (state != previousState) 
+    {
+      state ? pressed() : released();
+    }
   }
 }
 
