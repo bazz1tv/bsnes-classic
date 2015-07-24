@@ -15,7 +15,7 @@ struct Debugger : HotkeyInput {
 
 struct StateManager : HotkeyInput {
   void pressed() {
-    mainWindow->showDebugger();
+    mainWindow->showStateManager();
   }
 
   StateManager() : HotkeyInput("State Manager", "input.userInterface.tools.stateManager") {
