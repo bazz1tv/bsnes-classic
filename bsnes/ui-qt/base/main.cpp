@@ -741,7 +741,6 @@ void CanvasObject::dropEvent(QDropEvent *event) {
   if(event->mimeData()->hasUrls()) {
     QList<QUrl> list = event->mimeData()->urls();
     if(list.count() == 1) cartridge.loadNormal(list.at(0).toLocalFile().toUtf8().constData());
-    mainWindow->updateRecentFiles();
   }
 }
 
