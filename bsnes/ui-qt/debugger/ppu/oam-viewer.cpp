@@ -298,6 +298,7 @@ zoomLevel(2)
 void OamViewer::setZoom(int zoomLevel)
 {
   this->zoomLevel = zoomLevel;
+  refresh(list->currentItem());
 }
 
 void OamViewer::Canvas::paintEvent(QPaintEvent*) {
