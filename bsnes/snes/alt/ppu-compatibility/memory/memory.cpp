@@ -66,6 +66,15 @@ void PPU::oam_mmio_write(uint16 addr, uint8 data) {
 
   sprite_list_valid = false;
 
+  // if we are in the first OAM table and looking at Y coordinate
+  if (addr < 0x200 && ((addr & 3) == 1))
+  {
+    // Hide the sprite if it's not enabled (controlled by oam-viewer debugger feature)
+    unsigned sprnum = addr / 4;
+    if (!sprEnabled[sprnum])
+      data = 224;
+  }
+
   if(regs.display_disabled == true) {
     memory::oam[addr] = data;
     update_sprite_list(addr, data);

@@ -25,6 +25,7 @@ public slots:
   void show();
   void refresh();
   void refresh(QTreeWidgetItem *item);
+  void refresh(QTreeWidgetItem *item, int column);
   void setZoom(int zoomlevel);
 };
 
