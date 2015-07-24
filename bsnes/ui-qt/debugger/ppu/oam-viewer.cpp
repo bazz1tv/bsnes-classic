@@ -266,7 +266,10 @@ zoomLevel(2)
   //Signals
   connect(zoom, SIGNAL(valueChanged(int)), this, SLOT(setZoom(int)));
   connect(refreshButton, SIGNAL(released()), this, SLOT(refresh()));
-  connect(list, SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(refresh(QTreeWidgetItem *)));
+  // The combination of the two signals below allows updates when different sprites are selected via KB arrow keys or mouse,
+  // as well as updating the sprite when the selected item is clicked on repeatedly. (OSX 10.10 tested only)
+  connect(list, SIGNAL(itemActivated(QTreeWidgetItem *,int)), this, SLOT(refresh(QTreeWidgetItem *)));
+  connect(list, SIGNAL(currentItemChanged(QTreeWidgetItem *,QTreeWidgetItem *)), this, SLOT(refresh(QTreeWidgetItem *)));
 }
 
 void OamViewer::setZoom(int zoomLevel)
