@@ -30,6 +30,10 @@ public:
   QCheckBox *autobreak;
   QWidget *spacer;
 
+  QHBoxLayout *AUTicksLayout;
+  QLabel *AUTicksLabel;
+  QSpinBox *AUTicks;
+
   void modifySystemState(unsigned);
   void echo(const char *message);
   void event();

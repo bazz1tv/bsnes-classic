@@ -91,6 +91,20 @@ Debugger::Debugger() {
   autobreak = new QCheckBox("Autobreak");
   controlLayout->addWidget(autobreak);
 
+  //controlLayout->addWidget(new QLabel("",this));
+
+  AUTicksLayout = new QHBoxLayout;
+  AUTicksLayout->setAlignment(Qt::AlignLeft);
+  AUTicksLayout->setMargin(Style::WindowMargin);
+  AUTicksLayout->setSpacing(Style::WidgetSpacing);
+  controlLayout->addLayout(AUTicksLayout);
+  AUTicksLabel = new QLabel("AU Ticks", this);
+  AUTicks = new QSpinBox(this);
+  AUTicks->setValue((SNES::system.region() == SNES::System::Region::NTSC ? 60 : 50));
+  //AUTicks->setAccelerated(true);
+  AUTicksLayout->addWidget(AUTicksLabel);
+  AUTicksLayout->addWidget(AUTicks);
+
   spacer = new QWidget;
   spacer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
   controlLayout->addWidget(spacer);
@@ -238,7 +252,7 @@ void Debugger::event() {
 
 //called once every time a video frame is rendered, used to update "auto refresh" tool windows
 void Debugger::frameTick() {
-  if(++frameCounter >= (SNES::system.region() == SNES::System::Region::NTSC ? 60 : 50)) {
+  if(++frameCounter >= AUTicks->value()) {
     frameCounter = 0;
     autoUpdate();
   }
