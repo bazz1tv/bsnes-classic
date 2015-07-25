@@ -20,6 +20,12 @@ void OamViewer::refresh(QTreeWidgetItem *item)
 {
   unsigned i = item->data(0, Qt::UserRole).toUInt();
 
+  if (SNES::ppu.sprEnabled[i])
+  {
+    toggleButton->setText("Hide");
+  }
+  else toggleButton->setText("Show");
+
   uint8_t d0 = SNES::memory::oam[(i << 2) + 0];
   uint8_t d1 = SNES::memory::oam[(i << 2) + 1];
   uint8_t d2 = SNES::memory::oam[(i << 2) + 2];
@@ -194,25 +200,59 @@ void OamViewer::refresh(QTreeWidgetItem *item)
   }
 }
 
+// intended to be called as a SLOT when the item is (double)clicked on
 void OamViewer::refresh(QTreeWidgetItem *item, int column)
 {
   if (column == 8)
   {
-    if (item->text(column) == "On")
-    {
-      item->setText(column, "Off");
-      SNES::ppu.sprEnabled[atoi(list->currentItem()->text(0).toUtf8().data())] = false;
-    }
-    else
-    {
-      item->setText(column, "On");
-      SNES::ppu.sprEnabled[atoi(list->currentItem()->text(0).toUtf8().data())] = true;
-    }
+    toggleSprite(item);
   }
   else
   {
     refresh(item);
   }
+}
+
+void OamViewer::toggleSprite(QTreeWidgetItem *item)
+{
+  unsigned i = item->data(0, Qt::UserRole).toUInt();
+  if (SNES::ppu.sprEnabled[i])
+  {
+    toggleSprite(item, false);
+  }
+  else
+  {
+    toggleSprite(item, true);
+  }
+}
+
+void OamViewer::toggleSprite(QTreeWidgetItem *item, bool show)
+{
+  unsigned i = item->data(0, Qt::UserRole).toUInt();
+  if (!show)
+  {
+    item->setText(8, "Off");
+    SNES::ppu.sprEnabled[i] = false;
+    if (item == list->currentItem())
+    {
+      toggleButton->setText("Show");
+    }
+  }
+  else
+  {
+    item->setText(8, "On");
+    SNES::ppu.sprEnabled[i] = true;
+    if (item == list->currentItem())
+    {
+      toggleButton->setText("Hide");
+    }
+  }
+}
+
+// SLOT
+void OamViewer::toggleCurrentSprite()
+{
+  toggleSprite(list->currentItem());
 }
 
 void OamViewer::autoUpdate() {
@@ -263,36 +303,110 @@ zoomLevel(2)
   controlLayout->setSpacing(0);
   layout->addLayout(controlLayout);
 
+  canvasLayout = new QHBoxLayout;
+  canvasLayout->setAlignment(Qt::AlignLeft);
+  canvasLayout->setMargin(Style::WindowMargin);
+  canvasLayout->setSpacing(Style::WidgetSpacing);
+  controlLayout->addLayout(canvasLayout);
+
   canvas = new Canvas;
   canvas->setFixedSize(128, 128);
-  controlLayout->addWidget(canvas);
+  canvasLayout->addWidget(canvas);
 
-  autoUpdateBox = new QCheckBox("Auto update");
-  controlLayout->addWidget(autoUpdateBox);
+  zoomLayout = new QVBoxLayout;
+  zoomLayout->setAlignment(Qt::AlignBottom);
+  zoomLayout->setSpacing(0);
+  canvasLayout->addLayout(zoomLayout);
 
   refreshButton = new QPushButton("Refresh");
   controlLayout->addWidget(refreshButton);
 
-  zoomLayout = new QHBoxLayout;
-  zoomLayout->setAlignment(Qt::AlignLeft);
-  zoomLayout->setMargin(Style::WindowMargin);
-  zoomLayout->setSpacing(Style::WidgetSpacing);
-  controlLayout->addLayout(zoomLayout);
-
   // Zoom widgets
   zoomLabel = new QLabel("Zoom", this);
   zoom = new QSpinBox(this);
+  zoom->setMinimum(1);
   zoom->setValue(2);
   zoomLayout->addWidget(zoomLabel);
   zoomLayout->addWidget(zoom);
 
+  toggleButton = new QPushButton("Hide");
+  zoomLayout->addWidget(toggleButton);
+  soloButton = new QPushButton("Solo");
+  zoomLayout->addWidget(soloButton);
+
+  autoUpdateBox = new QCheckBox("Auto update");
+  controlLayout->addWidget(autoUpdateBox);
+
+  //
+  list->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(list, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(showContextMenu(const QPoint &)));
+
   //Signals
   connect(zoom, SIGNAL(valueChanged(int)), this, SLOT(setZoom(int)));
   connect(refreshButton, SIGNAL(released()), this, SLOT(refresh()));
+  connect(toggleButton, SIGNAL(released()), this, SLOT(toggleCurrentSprite()));
+  connect(soloButton, SIGNAL(released()), this, SLOT(soloSprite_slot()));
   // The combination of the two signals below allows updates when different sprites are selected via KB arrow keys or mouse,
   // as well as updating the sprite when the selected item is clicked on repeatedly. (OSX 10.10 tested only)
   connect(list, SIGNAL(itemActivated(QTreeWidgetItem *,int)), this, SLOT(refresh(QTreeWidgetItem *, int)));
   connect(list, SIGNAL(currentItemChanged(QTreeWidgetItem *,QTreeWidgetItem *)), this, SLOT(refresh(QTreeWidgetItem *)));
+}
+
+void OamViewer::soloSprite_slot()
+{
+  soloSprite(list->currentItem());
+}
+
+void OamViewer::showContextMenu(const QPoint &pos)
+{
+  QTreeWidgetItem *item = list->itemAt(pos);
+  if (!item)
+     return;
+  QMenu *menu = new QMenu(list);
+  QAction *myAction = menu->addAction("Solo");
+  //myAction->setIcon(QIcon(QString::fromUtf8("Resources/Remove.png")));
+  //myAction->setShortcut(tr("Ctrl+D"));
+  myAction->setStatusTip(tr("Display only this sprite"));
+  QAction *clicked_action = menu->exec(list->viewport()->mapToGlobal(pos));
+  if (clicked_action)
+  {
+    soloSprite(item);
+  }
+}
+
+// This toggles the soloing of a sprite
+void OamViewer::soloSprite(QTreeWidgetItem *item)
+{
+  unsigned spr_index = item->data(0, Qt::UserRole).toUInt();
+  bool all_others_disabled = true;
+
+  for (unsigned i=0; i < 128; i++)
+  {
+    if (spr_index != i)
+    {
+      if (SNES::ppu.sprEnabled[i])
+      {
+        all_others_disabled = false;
+        break;
+      }
+    }
+  }
+
+  // if all sprites are disabled
+  if (all_others_disabled && !SNES::ppu.sprEnabled[spr_index])
+  {
+    toggleSprite(item, true);
+    return;
+  }
+
+  for (unsigned i=0; i < 128; i++)
+  {
+    if (spr_index != i)
+    {
+      toggleSprite(list->topLevelItem(i), all_others_disabled ? true : false);
+    }
+  }
+  toggleSprite(item, true);
 }
 
 void OamViewer::setZoom(int zoomLevel)
