@@ -91,8 +91,17 @@ Debugger::Debugger() {
   autobreak = new QCheckBox("Autobreak");
   controlLayout->addWidget(autobreak);
 
+  frameBreakLayout = new QHBoxLayout;
+  frameBreakLayout->setAlignment(Qt::AlignLeft);
+  frameBreakLayout->setMargin(Style::WindowMargin);
+  frameBreakLayout->setSpacing(Style::WidgetSpacing);
+  controlLayout->addLayout(frameBreakLayout);
   frameBreak = new QCheckBox("Frame Break");
-  controlLayout->addWidget(frameBreak);
+  frameBreakLayout->addWidget(frameBreak);
+  frameBreakSpinBox = new QSpinBox(this);
+  frameBreakSpinBox->setMinimum(1);
+  frameBreakSpinBox->setValue(1);
+  frameBreakLayout->addWidget(frameBreakSpinBox);
 
   //controlLayout->addWidget(new QLabel("",this));
 
@@ -156,7 +165,16 @@ void Debugger::setAutoBreak(int i)
 
 void Debugger::setFrameBreak(int i)
 {
-  //SNES::debugger.framebreak = i;
+  if (i)
+  {
+    //frameBreakSpinBox->setEnabled(false);
+    frameBreak_last = 0;
+  }
+  else
+  {
+    SNES::debugger.breakpoint[SNES::Debugger::Breakpoints].counter = 0;
+    frameBreakSpinBox->setEnabled(true);
+  }
 }
 
 void Debugger::modifySystemState(unsigned state) {
@@ -265,13 +283,11 @@ void Debugger::frameTick() {
     frameCounter = 0;
     autoUpdate();
   }
-  if (frameBreak->isChecked())
+  if (frameBreak->isChecked() && ++frameBreak_last == frameBreakSpinBox->value())
   {
+    SNES::debugger.breakpoint[SNES::Debugger::Breakpoints].numbreaks = frameBreak_last;
+    frameBreak_last = 0;
     SNES::debugger.frameBreak = true;
-    //fprintf(stderr, "DERP!\n");
-    // Break!
-    //SNES::debugger.break_event = SNES::Debugger::BreakEvent::BreakpointHit;
-    //SNES::scheduler.exit(SNES::Scheduler::ExitReason::DebuggerEvent);
   }
 }
 

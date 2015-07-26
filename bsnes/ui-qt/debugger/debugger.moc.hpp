@@ -28,12 +28,16 @@ public:
   QCheckBox *traceSMP;
   QCheckBox *traceMask;
   QCheckBox *autobreak;
+  QHBoxLayout *frameBreakLayout;
   QCheckBox *frameBreak;
+  QSpinBox *frameBreakSpinBox;
   QWidget *spacer;
 
   QHBoxLayout *AUTicksLayout;
   QLabel *AUTicksLabel;
   QSpinBox *AUTicks;
+
+  unsigned frameBreak_last=0;
 
   void modifySystemState(unsigned);
   void echo(const char *message);
