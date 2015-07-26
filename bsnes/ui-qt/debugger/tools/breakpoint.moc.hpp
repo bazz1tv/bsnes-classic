@@ -6,12 +6,14 @@ public:
   QCheckBox *enabled;
   QLineEdit *addr;
   QLineEdit *data;
+  QSpinBox *numbreaks;
   QComboBox *mode;
   QComboBox *source;
   BreakpointItem(unsigned id);
 
 public slots:
   void toggle();
+  void setNumBreaks(int n);
 
 private:
   const unsigned id;

@@ -18,6 +18,12 @@ BreakpointItem::BreakpointItem(unsigned id_) : id(id_) {
   data->setFixedWidth(40);
   layout->addWidget(data);
 
+  numbreaks = new QSpinBox;
+  numbreaks->setMinimum(1);
+  numbreaks->setValue(1);
+  layout->addWidget(numbreaks);
+
+
   mode = new QComboBox;
   mode->addItem("Exec");
   mode->addItem("Read");
@@ -33,6 +39,12 @@ BreakpointItem::BreakpointItem(unsigned id_) : id(id_) {
   layout->addWidget(source);
 
   connect(enabled, SIGNAL(stateChanged(int)), this, SLOT(toggle()));
+  connect(numbreaks, SIGNAL(valueChanged(int)), this, SLOT(setNumBreaks(int)));
+}
+
+void BreakpointItem::setNumBreaks(int n)
+{
+  SNES::debugger.breakpoint[id].numbreaks = n;
 }
 
 void BreakpointItem::toggle() {
@@ -46,11 +58,13 @@ void BreakpointItem::toggle() {
     SNES::debugger.breakpoint[id].mode = (SNES::Debugger::Breakpoint::Mode)mode->currentIndex();
     SNES::debugger.breakpoint[id].source = (SNES::Debugger::Breakpoint::Source)source->currentIndex();
     SNES::debugger.breakpoint[id].counter = 0;
+    //SNES::debugger.breakpoint[id].numbreaks = numbreaks->value();
 
     addr->setEnabled(false);
     data->setEnabled(false);
     mode->setEnabled(false);
     source->setEnabled(false);
+    numbreaks->setEnabled(false);
   } else {
     SNES::debugger.breakpoint[id].enabled = false;
 
@@ -58,6 +72,7 @@ void BreakpointItem::toggle() {
     data->setEnabled(true);
     mode->setEnabled(true);
     source->setEnabled(true);
+    numbreaks->setEnabled(true);
   }
 }
 
