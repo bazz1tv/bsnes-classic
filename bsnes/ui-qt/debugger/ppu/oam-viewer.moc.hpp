@@ -19,7 +19,8 @@ public:
   QSpinBox *zoom;
   int zoomLevel;
 
-  QPushButton *toggleButton, *soloButton;
+  QPushButton *soloButton;
+  QCheckBox *toggleBox;
 
   void autoUpdate();
   void soloSprite(QTreeWidgetItem *item);
@@ -34,6 +35,7 @@ public slots:
   void toggleSprite(QTreeWidgetItem *item);
   void toggleSprite(QTreeWidgetItem *item, bool show);
   void toggleCurrentSprite();
+  void toggleCurrentSprite(bool state);
   void soloSprite_slot();
   void showContextMenu(const QPoint &pos);
 };

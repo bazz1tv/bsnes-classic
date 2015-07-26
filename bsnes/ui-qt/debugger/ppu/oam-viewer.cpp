@@ -22,9 +22,9 @@ void OamViewer::refresh(QTreeWidgetItem *item)
 
   if (SNES::ppu.sprEnabled[i])
   {
-    toggleButton->setText("Hide");
+    toggleBox->setChecked(true);
   }
-  else toggleButton->setText("Show");
+  else toggleBox->setChecked(false);
 
   uint8_t d0 = SNES::memory::oam[(i << 2) + 0];
   uint8_t d1 = SNES::memory::oam[(i << 2) + 1];
@@ -235,7 +235,7 @@ void OamViewer::toggleSprite(QTreeWidgetItem *item, bool show)
     SNES::ppu.sprEnabled[i] = false;
     if (item == list->currentItem())
     {
-      toggleButton->setText("Show");
+      toggleBox->setChecked(false);
     }
   }
   else
@@ -244,7 +244,7 @@ void OamViewer::toggleSprite(QTreeWidgetItem *item, bool show)
     SNES::ppu.sprEnabled[i] = true;
     if (item == list->currentItem())
     {
-      toggleButton->setText("Hide");
+      toggleBox->setChecked(true);
     }
   }
 }
@@ -253,6 +253,11 @@ void OamViewer::toggleSprite(QTreeWidgetItem *item, bool show)
 void OamViewer::toggleCurrentSprite()
 {
   toggleSprite(list->currentItem());
+}
+// SLOT
+void OamViewer::toggleCurrentSprite(bool state)
+{
+  toggleSprite(list->currentItem(), state);
 }
 
 void OamViewer::autoUpdate() {
@@ -313,27 +318,25 @@ zoomLevel(2)
   canvas->setFixedSize(128, 128);
   canvasLayout->addWidget(canvas);
 
+  // Zoom widgets
   zoomLayout = new QVBoxLayout;
-  zoomLayout->setAlignment(Qt::AlignBottom);
+  zoomLayout->setAlignment(Qt::AlignTop);
   zoomLayout->setSpacing(0);
   canvasLayout->addLayout(zoomLayout);
-
-  refreshButton = new QPushButton("Refresh");
-  controlLayout->addWidget(refreshButton);
-
-  // Zoom widgets
   zoomLabel = new QLabel("Zoom", this);
   zoom = new QSpinBox(this);
   zoom->setMinimum(1);
   zoom->setValue(2);
   zoomLayout->addWidget(zoomLabel);
   zoomLayout->addWidget(zoom);
-
-  toggleButton = new QPushButton("Hide");
-  zoomLayout->addWidget(toggleButton);
+  // buttons Widgets
   soloButton = new QPushButton("Solo");
   zoomLayout->addWidget(soloButton);
-
+  toggleBox = new QCheckBox("Enable", this);
+  zoomLayout->addWidget(toggleBox);
+  //
+  refreshButton = new QPushButton("Refresh");
+  controlLayout->addWidget(refreshButton);
   autoUpdateBox = new QCheckBox("Auto update");
   controlLayout->addWidget(autoUpdateBox);
 
@@ -344,7 +347,7 @@ zoomLevel(2)
   //Signals
   connect(zoom, SIGNAL(valueChanged(int)), this, SLOT(setZoom(int)));
   connect(refreshButton, SIGNAL(released()), this, SLOT(refresh()));
-  connect(toggleButton, SIGNAL(released()), this, SLOT(toggleCurrentSprite()));
+  connect(toggleBox, SIGNAL(clicked(bool)), this, SLOT(toggleCurrentSprite(bool)));
   connect(soloButton, SIGNAL(released()), this, SLOT(soloSprite_slot()));
   // The combination of the two signals below allows updates when different sprites are selected via KB arrow keys or mouse,
   // as well as updating the sprite when the selected item is clicked on repeatedly. (OSX 10.10 tested only)
