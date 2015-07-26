@@ -91,6 +91,9 @@ Debugger::Debugger() {
   autobreak = new QCheckBox("Autobreak");
   controlLayout->addWidget(autobreak);
 
+  frameBreak = new QCheckBox("Frame Break");
+  controlLayout->addWidget(frameBreak);
+
   //controlLayout->addWidget(new QLabel("",this));
 
   AUTicksLayout = new QHBoxLayout;
@@ -139,6 +142,7 @@ Debugger::Debugger() {
   connect(traceSMP, SIGNAL(stateChanged(int)), tracer, SLOT(setSmpTraceState(int)));
   connect(traceMask, SIGNAL(stateChanged(int)), tracer, SLOT(setTraceMaskState(int)));
   connect(autobreak, SIGNAL(stateChanged(int)), this, SLOT(setAutoBreak(int)));
+  connect(frameBreak, SIGNAL(stateChanged(int)), this, SLOT(setFrameBreak(int)));
 
   frameCounter = 0;
   synchronize();
@@ -148,6 +152,11 @@ Debugger::Debugger() {
 void Debugger::setAutoBreak(int i)
 {
   SNES::debugger.autobreak = i;
+}
+
+void Debugger::setFrameBreak(int i)
+{
+  //SNES::debugger.framebreak = i;
 }
 
 void Debugger::modifySystemState(unsigned state) {
@@ -255,6 +264,14 @@ void Debugger::frameTick() {
   if(++frameCounter >= AUTicks->value()) {
     frameCounter = 0;
     autoUpdate();
+  }
+  if (frameBreak->isChecked())
+  {
+    SNES::debugger.frameBreak = true;
+    //fprintf(stderr, "DERP!\n");
+    // Break!
+    //SNES::debugger.break_event = SNES::Debugger::BreakEvent::BreakpointHit;
+    //SNES::scheduler.exit(SNES::Scheduler::ExitReason::DebuggerEvent);
   }
 }
 

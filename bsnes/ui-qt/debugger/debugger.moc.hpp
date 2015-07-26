@@ -28,6 +28,7 @@ public:
   QCheckBox *traceSMP;
   QCheckBox *traceMask;
   QCheckBox *autobreak;
+  QCheckBox *frameBreak;
   QWidget *spacer;
 
   QHBoxLayout *AUTicksLayout;
@@ -43,6 +44,7 @@ public:
 
 public slots:
   void setAutoBreak(int i);
+  void setFrameBreak(int i);
   void clear();
   void synchronize();
 

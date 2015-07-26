@@ -14,6 +14,14 @@
 Debugger debugger;
 
 void Debugger::breakpoint_test(Debugger::Breakpoint::Source source, Debugger::Breakpoint::Mode mode, unsigned addr, uint8 data) {
+  if (frameBreak)
+  {
+    frameBreak = false;
+    breakpoint_hit = Breakpoints;
+    breakpoint[Breakpoints].counter++;
+    break_event = BreakEvent::BreakpointHit;
+    scheduler.exit(Scheduler::ExitReason::DebuggerEvent);
+  }
   for(unsigned i = 0; i < Breakpoints; i++) {
     if(breakpoint[i].enabled == false) continue;
     if(breakpoint[i].source != source) continue;
