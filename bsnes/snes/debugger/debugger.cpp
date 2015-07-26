@@ -31,8 +31,11 @@ void Debugger::breakpoint_test(Debugger::Breakpoint::Source source, Debugger::Br
 
     if (!autobreak)
     {
-      break_event = BreakEvent::BreakpointHit;
-      scheduler.exit(Scheduler::ExitReason::DebuggerEvent);
+      if (breakpoint[i].counter % breakpoint[i].numbreaks == 0)
+      {
+        break_event = BreakEvent::BreakpointHit;
+        scheduler.exit(Scheduler::ExitReason::DebuggerEvent);
+      }
     }
     else
     {
@@ -144,6 +147,7 @@ Debugger::Debugger() {
     breakpoint[n].mode = Breakpoint::Mode::Exec;
     breakpoint[n].source = Breakpoint::Source::CPUBus;
     breakpoint[n].counter = 0;
+    breakpoint[n].numbreaks = 1;
   }
   breakpoint_hit = 0;
 
