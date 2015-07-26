@@ -1,34 +1,30 @@
 #include "breakpoint.moc"
 BreakpointEditor *breakpointEditor;
 
-BreakpointItem::BreakpointItem(unsigned id_) : id(id_) {
-  layout = new QHBoxLayout;
-  layout->setMargin(0);
-  layout->setSpacing(Style::WidgetSpacing);
-  setLayout(layout);
-
+BreakpointItem::BreakpointItem(unsigned id_, QGridLayout *layout) : id(id_) {
+  unsigned n=0;
   enabled = new QCheckBox;
-  layout->addWidget(enabled);
+  layout->addWidget(enabled, id+1, n++, Qt::AlignLeft);
 
   addr = new QLineEdit;
   addr->setFixedWidth(80);
-  layout->addWidget(addr);
+  layout->addWidget(addr, id+1, n++, Qt::AlignLeft);
 
   data = new QLineEdit;
   data->setFixedWidth(40);
-  layout->addWidget(data);
+  layout->addWidget(data, id+1, n++, Qt::AlignLeft);
 
   numbreaks = new QSpinBox;
   numbreaks->setMinimum(1);
   numbreaks->setValue(1);
-  layout->addWidget(numbreaks);
+  layout->addWidget(numbreaks, id+1, n++, Qt::AlignLeft);
 
 
   mode = new QComboBox;
   mode->addItem("Exec");
   mode->addItem("Read");
   mode->addItem("Write");
-  layout->addWidget(mode);
+  layout->addWidget(mode, id+1, n++, Qt::AlignLeft);
 
   source = new QComboBox;
   source->addItem("S-CPU bus");
@@ -36,10 +32,27 @@ BreakpointItem::BreakpointItem(unsigned id_) : id(id_) {
   source->addItem("S-PPU VRAM");
   source->addItem("S-PPU OAM");
   source->addItem("S-PPU CGRAM");
-  layout->addWidget(source);
+  layout->addWidget(source, id+1, n++, Qt::AlignLeft);
 
   connect(enabled, SIGNAL(stateChanged(int)), this, SLOT(toggle()));
   connect(numbreaks, SIGNAL(valueChanged(int)), this, SLOT(setNumBreaks(int)));
+}
+
+BreakpointDesc::BreakpointDesc(QGridLayout *layout)
+{
+  unsigned n=0;
+  enabled = new QLabel("Enable", this);
+  layout->addWidget(enabled, 0, n++);
+  addr = new QLabel("Address", this);
+  layout->addWidget(addr, 0, n++);
+  data = new QLabel("Data", this);
+  layout->addWidget(data, 0, n++);
+  numbreaks = new QLabel("Numbreaks", this);
+  layout->addWidget(numbreaks, 0, n++);
+  mode = new QLabel("Mode", this);
+  layout->addWidget(mode, 0, n++);
+  source = new QLabel("Source", this);
+  layout->addWidget(source, 0, n++);
 }
 
 void BreakpointItem::setNumBreaks(int n)
@@ -82,14 +95,12 @@ BreakpointEditor::BreakpointEditor() {
   setGeometryString(&config().geometry.breakpointEditor);
   application.windowList.append(this);
 
-  layout = new QVBoxLayout;
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setMargin(Style::WindowMargin);
-  layout->setSpacing(Style::WidgetSpacing);
+  layout = new QGridLayout(this);
   setLayout(layout);
 
+  desc = new BreakpointDesc(layout);
+
   for(unsigned n = 0; n < SNES::Debugger::Breakpoints; n++) {
-    breakpoint[n] = new BreakpointItem(n);
-    layout->addWidget(breakpoint[n]);
+    breakpoint[n] = new BreakpointItem(n, layout);
   }
 }
