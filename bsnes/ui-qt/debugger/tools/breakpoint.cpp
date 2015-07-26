@@ -4,7 +4,7 @@ BreakpointEditor *breakpointEditor;
 BreakpointItem::BreakpointItem(unsigned id_, QGridLayout *layout) : id(id_) {
   unsigned n=0;
   enabled = new QCheckBox;
-  layout->addWidget(enabled, id+1, n++, Qt::AlignLeft);
+  layout->addWidget(enabled, id+1, n++, Qt::AlignHCenter);
 
   addr = new QLineEdit;
   addr->setFixedWidth(80);
@@ -17,7 +17,7 @@ BreakpointItem::BreakpointItem(unsigned id_, QGridLayout *layout) : id(id_) {
   numbreaks = new QSpinBox;
   numbreaks->setMinimum(1);
   numbreaks->setValue(1);
-  layout->addWidget(numbreaks, id+1, n++, Qt::AlignLeft);
+  layout->addWidget(numbreaks, id+1, n++, Qt::AlignHCenter);
 
 
   mode = new QComboBox;
@@ -42,17 +42,17 @@ BreakpointDesc::BreakpointDesc(QGridLayout *layout)
 {
   unsigned n=0;
   enabled = new QLabel("Enable", this);
-  layout->addWidget(enabled, 0, n++);
+  layout->addWidget(enabled, 0, n++, Qt::AlignHCenter);
   addr = new QLabel("Address", this);
-  layout->addWidget(addr, 0, n++);
+  layout->addWidget(addr, 0, n++, Qt::AlignLeft);
   data = new QLabel("Data", this);
-  layout->addWidget(data, 0, n++);
+  layout->addWidget(data, 0, n++, Qt::AlignLeft);
   numbreaks = new QLabel("Numbreaks", this);
-  layout->addWidget(numbreaks, 0, n++);
+  layout->addWidget(numbreaks, 0, n++, Qt::AlignLeft);
   mode = new QLabel("Mode", this);
-  layout->addWidget(mode, 0, n++);
+  layout->addWidget(mode, 0, n++, Qt::AlignLeft);
   source = new QLabel("Source", this);
-  layout->addWidget(source, 0, n++);
+  layout->addWidget(source, 0, n++, Qt::AlignLeft);
 }
 
 void BreakpointItem::setNumBreaks(int n)
