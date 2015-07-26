@@ -313,27 +313,25 @@ zoomLevel(2)
   canvas->setFixedSize(128, 128);
   canvasLayout->addWidget(canvas);
 
+  // Zoom widgets
   zoomLayout = new QVBoxLayout;
-  zoomLayout->setAlignment(Qt::AlignBottom);
+  zoomLayout->setAlignment(Qt::AlignTop);
   zoomLayout->setSpacing(0);
   canvasLayout->addLayout(zoomLayout);
-
-  refreshButton = new QPushButton("Refresh");
-  controlLayout->addWidget(refreshButton);
-
-  // Zoom widgets
   zoomLabel = new QLabel("Zoom", this);
   zoom = new QSpinBox(this);
   zoom->setMinimum(1);
   zoom->setValue(2);
   zoomLayout->addWidget(zoomLabel);
   zoomLayout->addWidget(zoom);
-
+  // buttons Widgets
   toggleButton = new QPushButton("Hide");
   zoomLayout->addWidget(toggleButton);
   soloButton = new QPushButton("Solo");
   zoomLayout->addWidget(soloButton);
-
+  //
+  refreshButton = new QPushButton("Refresh");
+  controlLayout->addWidget(refreshButton);
   autoUpdateBox = new QCheckBox("Auto update");
   controlLayout->addWidget(autoUpdateBox);
 
