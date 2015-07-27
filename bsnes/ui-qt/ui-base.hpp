@@ -71,6 +71,7 @@ using namespace ruby;
 #include "settings/input.moc.hpp"
 #include "settings/paths.moc.hpp"
 #include "settings/advanced.moc.hpp"
+#include "settings/debugger-settings.moc.hpp"
 
 #include "state/state.hpp"
 
