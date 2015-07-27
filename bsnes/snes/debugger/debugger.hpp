@@ -18,8 +18,9 @@ public:
     enum class Mode : unsigned { Exec, Read, Write } mode;
     enum class Source : unsigned { CPUBus, APURAM, VRAM, OAM, CGRAM } source;
     unsigned counter;  //number of times breakpoint has been hit since being set
-    unsigned numbreaks;
+    unsigned numbreaks, numbreaks_last=0;
   } breakpoint[Breakpoints+1];
+
   unsigned breakpoint_hit;
   void breakpoint_test(Breakpoint::Source source, Breakpoint::Mode mode, unsigned addr, uint8 data);
 

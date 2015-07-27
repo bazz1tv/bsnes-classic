@@ -27,12 +27,14 @@ void Debugger::breakpoint_test(Debugger::Breakpoint::Source source, Debugger::Br
     }
 
     breakpoint[i].counter++;
+    breakpoint[i].numbreaks_last++;
     breakpoint_hit = i;
 
     if (!autobreak)
     {
-      if (breakpoint[i].counter % breakpoint[i].numbreaks == 0)
+      if (breakpoint[i].numbreaks_last == breakpoint[i].numbreaks)
       {
+        breakpoint[i].numbreaks_last = 0;
         break_event = BreakEvent::BreakpointHit;
         scheduler.exit(Scheduler::ExitReason::DebuggerEvent);
       }
