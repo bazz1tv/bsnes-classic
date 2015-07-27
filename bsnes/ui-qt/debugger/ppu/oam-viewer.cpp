@@ -20,12 +20,6 @@ void OamViewer::refresh(QTreeWidgetItem *item)
 {
   unsigned i = item->data(0, Qt::UserRole).toUInt();
 
-  if (SNES::ppu.sprEnabled[i])
-  {
-    toggleBox->setChecked(true);
-  }
-  else toggleBox->setChecked(false);
-
   uint8_t d0 = SNES::memory::oam[(i << 2) + 0];
   uint8_t d1 = SNES::memory::oam[(i << 2) + 1];
   uint8_t d2 = SNES::memory::oam[(i << 2) + 2];
@@ -197,6 +191,14 @@ void OamViewer::refresh(QTreeWidgetItem *item)
       *canvas->image = mirrored;
     }
     canvas->update();
+    // end canvas update
+
+    // update "enabled" checkbox
+    if (SNES::ppu.sprEnabled[i])
+    {
+      toggleBox->setChecked(true);
+    }
+    else toggleBox->setChecked(false);
   }
 }
 
