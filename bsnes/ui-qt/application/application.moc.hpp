@@ -21,6 +21,12 @@ public:
     #endif
 
     App(int &argc, char **argv) : QApplication(argc, argv) {}
+    // so we can duble-click-open files from OSX (and other platforms?)
+    bool event(QEvent *e);
+
+    bool guiFilePresent=false;
+    string guiFilename;
+    bool initFinished=false; ///< Application::init() will update this variable
   } *app;
 
   QTimer *timer;

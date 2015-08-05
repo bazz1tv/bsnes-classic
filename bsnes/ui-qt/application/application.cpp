@@ -14,6 +14,28 @@ VideoDisplay::VideoDisplay() {
   cropBottom = 0;
 }
 
+bool Application::App::event(QEvent *e)
+{
+  switch (e->type())
+  {
+  case QEvent::FileOpen:
+  {
+    guiFilename = static_cast<QFileOpenEvent *>(e)->file().toUtf8().data();
+    guiFilePresent = true;
+    // if the application is initialized, we load the ROM directly
+    // (this function is called in the main thread :)
+    if (initFinished)
+    {
+      fileBrowser->cartridgeMode = FileBrowser::CartridgeMode::LoadDirect;
+      fileBrowser->onAcceptCartridge(guiFilename);
+    }
+    return true;
+  }
+  default:
+      return QApplication::event(e);
+  }
+}
+
 void Application::initPaths(const char *basename) {
   char temp[PATH_MAX];
 
@@ -87,9 +109,14 @@ int Application::main(int &argc, char **argv) {
   SNES::system.init(&interface);
   mainWindow->system_loadSpecial_superGameBoy->setVisible(SNES::supergameboy.opened());
 
+  app->initFinished = true;
   if(argc == 2) {
     //if valid file was specified on the command-line, attempt to load it now
     cartridge.loadNormal(argv[1]);
+  }
+  if (app->guiFilePresent)
+  {
+    cartridge.loadNormal(app->guiFilename);
   }
 
   timer = new QTimer(this);

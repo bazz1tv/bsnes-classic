@@ -67,6 +67,7 @@ build: ui_build $(objects)
 ifeq ($(platform),osx)
 	test -d ../bsnes.app || mkdir -p ../bsnes.app/Contents/MacOS
 	$(strip $(cpp) -o ../bsnes.app/Contents/MacOS/bsnes $(objects) $(link))
+	cp Info.plist ../bsnes.app/Contents
 else
 	$(strip $(cpp) -o out/bsnes $(objects) $(link))
 endif
