@@ -8,11 +8,11 @@ BreakpointItem::BreakpointItem(unsigned id_, QGridLayout *layout) : id(id_) {
 
   addr = new QLineEdit;
   addr->setFixedWidth(80);
-  layout->addWidget(addr, id+1, n++, Qt::AlignLeft);
+  layout->addWidget(addr, id+1, n++, Qt::AlignHCenter);
 
   data = new QLineEdit;
   data->setFixedWidth(40);
-  layout->addWidget(data, id+1, n++, Qt::AlignLeft);
+  layout->addWidget(data, id+1, n++, Qt::AlignHCenter);
 
   numbreaks = new QSpinBox;
   numbreaks->setMinimum(1);
@@ -24,7 +24,7 @@ BreakpointItem::BreakpointItem(unsigned id_, QGridLayout *layout) : id(id_) {
   mode->addItem("Exec");
   mode->addItem("Read");
   mode->addItem("Write");
-  layout->addWidget(mode, id+1, n++, Qt::AlignLeft);
+  layout->addWidget(mode, id+1, n++, Qt::AlignHCenter);
 
   source = new QComboBox;
   source->addItem("S-CPU bus");
@@ -44,15 +44,15 @@ BreakpointDesc::BreakpointDesc(QGridLayout *layout)
   enabled = new QLabel("Enable", this);
   layout->addWidget(enabled, 0, n++, Qt::AlignHCenter);
   addr = new QLabel("Address", this);
-  layout->addWidget(addr, 0, n++, Qt::AlignLeft);
+  layout->addWidget(addr, 0, n++, Qt::AlignHCenter);
   data = new QLabel("Data", this);
-  layout->addWidget(data, 0, n++, Qt::AlignLeft);
+  layout->addWidget(data, 0, n++, Qt::AlignHCenter);
   numbreaks = new QLabel("Numbreaks", this);
-  layout->addWidget(numbreaks, 0, n++, Qt::AlignLeft);
+  layout->addWidget(numbreaks, 0, n++, Qt::AlignHCenter);
   mode = new QLabel("Mode", this);
-  layout->addWidget(mode, 0, n++, Qt::AlignLeft);
+  layout->addWidget(mode, 0, n++, Qt::AlignHCenter);
   source = new QLabel("Source", this);
-  layout->addWidget(source, 0, n++, Qt::AlignLeft);
+  layout->addWidget(source, 0, n++, Qt::AlignHCenter);
 }
 
 void BreakpointItem::setNumBreaks(int n)
