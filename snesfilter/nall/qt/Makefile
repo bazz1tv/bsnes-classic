@@ -9,14 +9,6 @@
 # $(qtinc) -- includes for compiling
 # $(qtlib) -- libraries for linking
 
-ifeq ($(QT_PATH),)
-  QT_PATH_LIB := /Library/Frameworks
-else
-  QT_PATH_LIB := $(QT_PATH)/lib
-  moc := $(QT_PATH)/bin/moc
-  rcc := $(QT_PATH)/bin/rcc
-endif
-
 ifeq ($(moc),)
 moc := moc
 endif
@@ -29,6 +21,14 @@ ifeq ($(platform),x)
   qtinc := `pkg-config --cflags $(qtlibs)`
   qtlib := `pkg-config --libs $(qtlibs)`
 else ifeq ($(platform),osx)
+  ifeq ($(QT_PATH),)
+    QT_PATH_LIB := /Library/Frameworks
+  else
+    QT_PATH_LIB := $(QT_PATH)/lib
+    moc := $(QT_PATH)/bin/moc
+    rcc := $(QT_PATH)/bin/rcc
+  endif
+
   qtinc := $(foreach lib,$(qtlibs),-I$(QT_PATH_LIB)/$(lib).framework/Headers)
   qtinc += -F$(QT_PATH_LIB)
   

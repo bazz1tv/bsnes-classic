@@ -7,11 +7,6 @@ ifeq ($(ui),)
   ui := ui-qt
 endif
 
-# Custom QT Path
-ifeq ($(QT_PATH),)
-	QT_PATH := /usr/local/Cellar/qt5/5.4.2
-endif
-
 # compiler
 c       := $(compiler) -x c -std=gnu99
 cpp     := $(compiler) -std=gnu++0x
@@ -32,7 +27,10 @@ flags += -DNDEBUG
 # platform
 ifeq ($(platform),x)
   link += -s -ldl -lX11 -lXext
+  flags += -fPIC
 else ifeq ($(platform),osx)
+	# Custom QT Path
+	QT_PATH ?= /usr/local/Cellar/qt5/5.4.2
 else ifeq ($(platform),win)
   link += -mwindows
 # link += -mconsole

@@ -1,4 +1,15 @@
-qtlibs := $(strip QtCore QtGui QtWidgets $(if $(findstring osx,$(platform)),QtOpenGL))
+ifeq ($(platform),x)
+  qtlibs := Qt5Core Qt5Gui Qt5Widgets
+else ifeq ($(platform),osx)
+	# Custom QT Path
+  ifeq ($(QT_PATH),)
+    QT_PATH := /usr/local/Cellar/qt5/5.4.2
+  endif
+  qtlibs := QtCore QtGui QtWidgets QtOpenGL
+else ifeq ($(platform),win)
+  qtlibs := QtCore QtGui QtWidgets
+endif
+
 include $(ui)/template/Makefile
 
 ui_objects := ui-main ui-base ui-cartridge ui-debugger ui-input ui-movie ui-settings ui-state ui-tools
@@ -14,7 +25,7 @@ qt_compile = $(call compile,-Iobj $(qtinc))
 # platform
 ifeq ($(platform),x)
   ruby := video.glx video.xv video.qtraster video.sdl
-  ruby += audio.alsa audio.openal audio.oss audio.pulseaudio audio.pulseaudiosimple audio.ao
+  ruby += audio.alsa #audio.openal audio.oss audio.pulseaudio audio.pulseaudiosimple audio.ao
   ruby += input.sdl input.x
 
   link += $(if $(findstring audio.openal,$(ruby)),-lopenal)

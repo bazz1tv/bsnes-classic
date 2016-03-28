@@ -1,9 +1,16 @@
 include nall/Makefile
-# Custom QT Path
-ifeq ($(QT_PATH),)
-	QT_PATH := /usr/local/Cellar/qt5/5.4.2
+
+ifeq ($(platform),x)
+	qtlibs := Qt5Core Qt5Gui Qt5Widgets
+else ifeq ($(platform),osx)
+	# Custom QT Path
+	ifeq ($(QT_PATH),)
+		QT_PATH := /usr/local/Cellar/qt5/5.4.2
+	endif
+	qtlibs := QtCore QtGui QtWidgets
+else ifeq ($(platform),win)
+	qtlibs := QtCore QtGui QtWidgets
 endif
-qtlibs := QtCore QtGui QtWidgets
 include nall/qt/Makefile
 
 c     := $(compiler) -x c -std=gnu99
