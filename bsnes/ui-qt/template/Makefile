@@ -62,11 +62,12 @@ else ifeq ($(platform),win)
   qtlib := -L$(qtpath)/lib
   qtlib += -L$(qtpath)/plugins/imageformats
 
-  qtlib += $(foreach lib,$(qtlibs),-l$(lib)4)
+  qtlib += -lQt5Core -lQt5Gui -lQt5Widgets
+  # $(foreach lib,$(qtlibs),-l$(lib)4)
   qtlib += -lmingw32 -lqtmain -lcomdlg32 -loleaut32 -limm32 -lwinmm
   qtlib += -lwinspool -lmsimg32 -lole32 -ladvapi32 -lws2_32 -luuid -lgdi32
-  qtlib += $(foreach lib,$(qtlibs),-l$(lib)4)
-
+  #qtlib += $(foreach lib,$(qtlibs),-l$(lib)4)
+  #qtlib += -lQt5Core -lQt5Gui -lQt5Widgets
   # optional image-file support:
   # qtlib += -lqjpeg -lqmng
 endif

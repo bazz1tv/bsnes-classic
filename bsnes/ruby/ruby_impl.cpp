@@ -74,6 +74,7 @@
   #include <ruby/video/qtraster.cpp>
 #endif
 
+#undef VIDEO_SDL
 #ifdef VIDEO_SDL
   #include <ruby/video/sdl.cpp>
 #endif
